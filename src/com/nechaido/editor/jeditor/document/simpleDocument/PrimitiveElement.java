@@ -1,9 +1,7 @@
 package com.nechaido.editor.jeditor.document.simpleDocument;
 
 import com.nechaido.editor.jeditor.document.Element;
-import com.nechaido.editor.jeditor.drawer.Drawer;
 
-import java.awt.*;
 import java.util.Collection;
 
 /**
@@ -12,57 +10,49 @@ import java.util.Collection;
 public abstract class PrimitiveElement implements Element {
 
     @Override
-    public void addChildElement(Element element) {
-
+    public void addElement(Element element) {
     }
 
     @Override
-    public void addChildElement(int index, Element element) {
-
+    public void addElement(int index, Element element) {
     }
 
     @Override
-    public void addAllChildElements(Collection<? extends Element> childElements) {
-
+    public void addAllElements(Collection<? extends Element> childElements) {
     }
 
     @Override
-    public void addAllChildElements(Element element) {
-
+    public void addAllElements(Element element) {
     }
 
     @Override
-    public void addAllChildElements(int index, Element element) {
-
+    public void addAllElements(int index, Element element) {
     }
 
     @Override
-    public void removeChildElement(int index) {
-
+    public void removeElement(int index) {
     }
 
     @Override
-    public void removeChildElements(int from, int to) {
-
+    public void removeElements(int from, int to) {
     }
 
     @Override
-    public void removeChildElements(int from) {
-
+    public void removeElements(int from) {
     }
 
     @Override
-    public Element getChildElement(int index) {
+    public Element getElement(int index) {
         return null;
     }
 
     @Override
-    public Collection<? extends Element> getChildElements() {
+    public Collection<? extends Element> getElements() {
         return null;
     }
 
     @Override
-    public Collection<? extends Element> getChildElements(int from, int to) {
+    public Collection<? extends Element> getElements(int from, int to) {
         return null;
     }
 
@@ -72,12 +62,12 @@ public abstract class PrimitiveElement implements Element {
     }
 
     @Override
-    public void setChildElement(int index, Element element) {
+    public void setElement(int index, Element element) {
 
     }
 
     @Override
-    public int amountOfChildElements() {
+    public int length() {
         return 0;
     }
 }

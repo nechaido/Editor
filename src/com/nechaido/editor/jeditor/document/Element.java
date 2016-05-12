@@ -1,37 +1,38 @@
 package com.nechaido.editor.jeditor.document;
 
-import com.nechaido.editor.jeditor.drawer.Drawer;
-
 import java.util.Collection;
 
 /**
  * Created by nechaido on 5/7/16.
  */
 public interface Element {
-    void drawBy(Drawer drawer);
     boolean isMajor();
 
-    void addChildElement(Element element);
-    void addChildElement(int index, Element element);
+    void addElement(Element element);
 
-    void addAllChildElements(Collection<? extends Element> childElements);
+    void addElement(int index, Element element);
 
-    void addAllChildElements(Element element);
-    void addAllChildElements(int index, Element element);
+    void addAllElements(Collection<? extends Element> childElements);
 
-    void removeChildElement(int index);
-    void removeChildElements(int from, int to);
+    void addAllElements(Element element);
 
-    void removeChildElements(int from);
+    void addAllElements(int index, Element element);
 
-    Element getChildElement(int index);
-    Collection<? extends Element> getChildElements();
+    void removeElement(int index);
 
-    Collection<? extends Element> getChildElements(int from, int to);
+    void removeElements(int from, int to);
+
+    void removeElements(int from);
+
+    Element getElement(int index);
+
+    Collection<? extends Element> getElements();
+
+    Collection<? extends Element> getElements(int from, int to);
 
     Element getSubElement(int from, int to);
 
-    void setChildElement(int index, Element element);
+    void setElement(int index, Element element);
 
-    int amountOfChildElements();
+    int length();
 }

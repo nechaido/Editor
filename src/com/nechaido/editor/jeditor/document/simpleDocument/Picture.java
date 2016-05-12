@@ -1,12 +1,7 @@
 package com.nechaido.editor.jeditor.document.simpleDocument;
 
-import com.nechaido.editor.jeditor.document.Element;
-import com.nechaido.editor.jeditor.drawer.Drawer;
-import com.nechaido.editor.jeditor.drawer.simpleDocument.SimpleDocumentDrawer;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 
 /**
  * Created by nechaido on 5/7/16.
@@ -21,11 +16,6 @@ public class Picture extends PrimitiveElement {
     }
 
     @Override
-    public void drawBy(Drawer drawer) {
-        ((SimpleDocumentDrawer)drawer).draw(this);
-    }
-
-    @Override
     public boolean isMajor() {
         return true;
     }
@@ -36,5 +26,9 @@ public class Picture extends PrimitiveElement {
 
     public void setSize(Dimension size) {
         this.size = new Dimension(size);
+    }
+
+    public BufferedImage getImage() {
+        return image;
     }
 }

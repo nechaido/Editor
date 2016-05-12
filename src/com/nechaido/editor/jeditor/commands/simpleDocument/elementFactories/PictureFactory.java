@@ -13,19 +13,19 @@ public class PictureFactory {
     private static PictureFactory instance;
     private HashMap<String, BufferedImage> pictures;
 
+    private PictureFactory() {
+        pictures = new HashMap<>();
+    }
+
     public static PictureFactory getInstance() {
-        if (instance == null){
+        if (instance == null) {
             instance = new PictureFactory();
         }
         return instance;
     }
 
-    private PictureFactory() {
-        pictures = new HashMap<>();
-    }
-
-    public BufferedImage getPicure(String path){
-        if (!pictures.containsKey(path)){
+    public BufferedImage getPicure(String path) {
+        if (!pictures.containsKey(path)) {
             try {
                 BufferedImage bufferedImage = ImageIO.read(new File(path));
                 pictures.put(path, bufferedImage);

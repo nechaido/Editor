@@ -1,22 +1,23 @@
 package com.nechaido.editor.jeditor.document.simpleDocument;
 
 import com.nechaido.editor.jeditor.document.Element;
-import com.nechaido.editor.jeditor.drawer.Drawer;
-import com.nechaido.editor.jeditor.drawer.simpleDocument.SimpleDocumentDrawer;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Created by nechaido on 5/9/16.
  */
-//TODO Nigga
-public class ElementComposition implements Element{
-    ArrayList<Element> contents;
+public class ElementComposition implements Element {
+    LinkedList<Element> contents;
 
-    @Override
-    public void drawBy(Drawer drawer) {
-        ((SimpleDocumentDrawer)drawer).draw(this);
+
+    public ElementComposition() {
+        contents = new LinkedList<>();
+    }
+
+    public ElementComposition(Collection<Element> elements) {
+        contents.addAll(elements);
     }
 
     @Override
@@ -25,72 +26,72 @@ public class ElementComposition implements Element{
     }
 
     @Override
-    public void addChildElement(Element element) {
-
+    public void addElement(Element element) {
+        contents.add(element);
     }
 
     @Override
-    public void addChildElement(int index, Element element) {
-
+    public void addElement(int index, Element element) {
+        contents.add(index, element);
     }
 
     @Override
-    public void addAllChildElements(Collection<? extends Element> childElements) {
-
+    public void addAllElements(Collection<? extends Element> childElements) {
+        contents.addAll(childElements);
     }
 
     @Override
-    public void addAllChildElements(Element element) {
-
+    public void addAllElements(Element element) {
+        contents.addAll(element.getElements());
     }
 
     @Override
-    public void addAllChildElements(int index, Element element) {
-
+    public void addAllElements(int index, Element element) {
+        contents.addAll(index, element.getElements());
     }
 
     @Override
-    public void removeChildElement(int index) {
-
+    public void removeElement(int index) {
+        contents.remove(index);
     }
 
     @Override
-    public void removeChildElements(int from, int to) {
-
+    public void removeElements(int from, int to) {
+        contents.subList(from, to).clear();
     }
 
     @Override
-    public void removeChildElements(int from) {
-
+    public void removeElements(int from) {
+        contents.subList(from, contents.size()).clear();
     }
 
     @Override
-    public Element getChildElement(int index) {
-        return null;
+    public Element getElement(int index) {
+        return contents.get(index);
     }
 
     @Override
-    public Collection<? extends Element> getChildElements() {
-        return null;
+    public Collection<? extends Element> getElements() {
+        return contents;
     }
 
     @Override
-    public Collection<? extends Element> getChildElements(int from, int to) {
-        return null;
+    public Collection<? extends Element> getElements(int from, int to) {
+        return contents.subList(from, to + 1);
     }
 
     @Override
     public Element getSubElement(int from, int to) {
-        return null;
+        return new ElementComposition(contents.subList(from, to + 1));
     }
 
     @Override
-    public void setChildElement(int index, Element element) {
-
+    public void setElement(int index, Element element) {
+        contents.set(index, element);
     }
 
     @Override
-    public int amountOfChildElements() {
-        return 0;
+    public int length() {
+        return contents.size();
     }
 }

@@ -8,9 +8,12 @@ import java.util.HashMap;
  * Created by nechaido on 5/9/16.
  */
 public class SymbolFactory {
+    private static SymbolFactory instance;
     private HashMap<Character, Symbol> symbols;
 
-    private static SymbolFactory instance;
+    private SymbolFactory() {
+        symbols = new HashMap<>();
+    }
 
     public static SymbolFactory getInstance() {
         if (instance == null) {
@@ -19,12 +22,8 @@ public class SymbolFactory {
         return instance;
     }
 
-    private SymbolFactory(){
-        symbols = new HashMap<>();
-    }
-
     public Symbol getSymbol(char character) {
-        if (!symbols.containsKey(character)){
+        if (!symbols.containsKey(character)) {
             symbols.put(character, new Symbol(character));
         }
         return symbols.get(character);

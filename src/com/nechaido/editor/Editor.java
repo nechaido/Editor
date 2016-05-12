@@ -16,7 +16,7 @@ public class Editor {
         });
     }
 
-    private static void createGUI(){
+    private static void createGUI() {
         JFrame jFrame = new JFrame("Text Editor");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
@@ -24,11 +24,13 @@ public class Editor {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        JScrollPane jScrollPane = new JScrollPane(new JEditor());
+        JEditor jEditor = new JEditor();
+        JScrollPane jScrollPane = new JScrollPane(jEditor);
         jFrame.add(jScrollPane);
         jFrame.pack();
         jFrame.setSize(300, 300);
         jFrame.setVisible(true);
         jScrollPane.getVerticalScrollBar().setValue(50);
+        jFrame.addKeyListener(jEditor);
     }
 }

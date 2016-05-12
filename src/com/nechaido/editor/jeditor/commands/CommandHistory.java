@@ -10,43 +10,46 @@ public class CommandHistory {
     private Stack<Command> undoHistory;
     private Stack<Command> redoHistory;
 
-    public CommandHistory(){
+    public CommandHistory() {
         undoHistory = new Stack<>();
         redoHistory = new Stack<>();
     }
 
-    public void undo(){
-        Command command = null;
-        while(!undoHistory.isEmpty() && !(command = undoHistory.pop()).isMajor()){
+    public void undo() {
+        Command command;
+        Command.Type type = undoHistory.peek().type();
+        while (!undoHistory.isEmpty() && type == undoHistory.peek().type()) {
+            command = undoHistory.pop();
             redoHistory.push(command);
             command.unExecute();
-        }
-        if (command != null && command.isMajor()){
-            redoHistory.push(command);
-            command.unExecute();
+            if (command.isMajor()) {
+                break;
+            }
         }
     }
 
-    public void redo(){
-        Command command = null;
-        while(!redoHistory.isEmpty() && !(command = redoHistory.pop()).isMajor()){
+    public void redo() {
+        Command command;
+        Command.Type type = undoHistory.peek().type();
+        while (!redoHistory.isEmpty() && type == redoHistory.peek().type()) {
+            command = redoHistory.pop();
             undoHistory.push(command);
             command.execute();
-        }
-        if (command != null && command.isMajor()){
-            undoHistory.push(command);
-            command.execute();
+            if (command.isMajor()) {
+                break;
+            }
         }
     }
 
-    public void push(Command command){
-        if (!redoHistory.isEmpty()){
+    public void run(Command command) {
+        if (!redoHistory.isEmpty()) {
             redoHistory = new Stack<>();
         }
         undoHistory.push(command);
+        command.execute();
     }
 
-    public void empty(){
+    public void empty() {
         undoHistory = new Stack<>();
         redoHistory = new Stack<>();
     }

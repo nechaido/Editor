@@ -1,5 +1,6 @@
 package com.nechaido.editor.jeditor.commands.simpleDocument;
 
+import com.nechaido.editor.jeditor.Context;
 import com.nechaido.editor.jeditor.commands.Command;
 
 /**
@@ -20,7 +21,7 @@ public abstract class AbstractSimpleDocumentCommand implements Command {
     }
 
     @Override
-    public boolean isMajor(){
+    public boolean isMajor() {
         return major;
     }
 

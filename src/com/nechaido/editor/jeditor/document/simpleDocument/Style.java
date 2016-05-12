@@ -18,15 +18,16 @@ public class Style {
         return fontMetrics.getFont();
     }
 
-    public Dimension getCharSize(char c){
+    public Dimension getCharSize(char c) {
         return new Dimension(fontMetrics.charWidth(c), fontMetrics.getHeight());
     }
 
-    public int getCharHeight(char c){
+    public int getCharHeight(char c) {
         return fontMetrics.getHeight();
     }
 
-    public int getCharWidth(char c){
+    public int getCharWidth(char c) {
         return fontMetrics.charWidth(c);
     }
+
 }

@@ -1,5 +1,7 @@
 package com.nechaido.editor.jeditor.commands.simpleDocument;
 
+import com.nechaido.editor.jeditor.Context;
+import com.nechaido.editor.jeditor.commands.Command;
 import com.nechaido.editor.jeditor.document.Element;
 
 import java.util.ArrayList;
@@ -12,8 +14,8 @@ public class InsertSectionInstead extends AbstractSimpleDocumentCommand {
     private InsertSection insertSection;
 
     public InsertSectionInstead(Context context,
-                         int sectionStartRow, int sectionStartElement, int sectionEndRow, int sectionEndElement,
-                         ArrayList<Element> section){
+                                int sectionStartRow, int sectionStartElement, int sectionEndRow, int sectionEndElement,
+                                ArrayList<Element> section) {
         super(context, true);
         removeSection = new RemoveSection(context, sectionStartRow, sectionStartElement, sectionEndRow, sectionEndElement);
         insertSection = new InsertSection(context, sectionStartRow, sectionStartElement, section);
@@ -29,5 +31,10 @@ public class InsertSectionInstead extends AbstractSimpleDocumentCommand {
     public void unExecute() {
         removeSection.unExecute();
         insertSection.unExecute();
+    }
+
+    @Override
+    public Type type() {
+        return null;
     }
 }

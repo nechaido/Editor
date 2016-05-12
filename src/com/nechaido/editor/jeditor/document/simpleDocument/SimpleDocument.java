@@ -12,13 +12,18 @@ import java.awt.*;
 public class SimpleDocument extends ElementComposition implements Document {
     private Style style;
 
+    public SimpleDocument(Style style) {
+        super();
+        this.style = style;
+        addElement(new ElementComposition());
+    }
+
     @Override
     public Drawer getDrawer(Graphics graphics) {
         return new SimpleDocumentDrawer(graphics, this, style);
     }
 
-    @Override
-    public void drawBy(Drawer drawer) {
-        ((SimpleDocumentDrawer)drawer).draw(this);
+    public Style getStyle() {
+        return style;
     }
 }
