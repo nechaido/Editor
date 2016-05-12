@@ -36,7 +36,7 @@ public class CommandHistory {
             return;
         }
         Command command;
-        Command.Type type = undoHistory.peek().type();
+        Command.Type type = redoHistory.peek().type();
         while (!redoHistory.isEmpty() && type == redoHistory.peek().type()) {
             command = redoHistory.pop();
             undoHistory.push(command);

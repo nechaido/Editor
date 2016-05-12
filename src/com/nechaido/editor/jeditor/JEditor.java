@@ -69,14 +69,20 @@ public class JEditor extends JComponent implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        Command command = commandGenerator.getCommand(keyEvent);
-        if (command != null){
-            commandHistory.run(command);
-            revalidate();
-            repaint();
+        if (keyEvent.getKeyCode() == KeyEvent.VK_Y && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+            commandHistory.redo();
+        } else if (keyEvent.getKeyCode() == KeyEvent.VK_Z && keyEvent.isShiftDown() && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+            commandHistory.redo();
+        } else if (keyEvent.getKeyCode() == KeyEvent.VK_Z && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+            commandHistory.undo();
+        } else {
+            Command command = commandGenerator.getCommand(keyEvent);
+            if (command != null){
+                commandHistory.run(command);
+            }
         }
-        System.out.println(selectionStart.row + " " + selectionStart.element);
-        System.out.println(selectionEnd.row + " " + selectionEnd.element);
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -119,12 +125,6 @@ public class JEditor extends JComponent implements KeyListener {
                 } else {
                     result = new RemoveElement(context);
                 }
-            } else if (key == KeyEvent.VK_Z && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-                commandHistory.undo();
-            } else if (key == KeyEvent.VK_Y && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-                commandHistory.redo();
-            } else if (key == KeyEvent.VK_Z && keyEvent.isShiftDown() && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-                commandHistory.redo();
             } else if (key == KeyEvent.VK_I && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
                 result = new InsertElement(context, new Picture(context.getPictureFactory().getPicure("/home/nechaido/glacier.jpg"), new Dimension(100, 100)));
             } else if (key == KeyEvent.VK_ENTER) {

@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class RemoveSection extends AbstractSimpleDocumentCommand {
 
+    private Carriage previousCarriage;
     private Carriage previousEnd;
     private Carriage previousStart;
 
@@ -24,8 +25,11 @@ public class RemoveSection extends AbstractSimpleDocumentCommand {
 
     public RemoveSection(Context context) {
         super(context, true);
+        previousCarriage = new Carriage();
         previousEnd = new Carriage();
         previousStart = new Carriage();
+        previousCarriage.row = context.getCarriage().row;
+        previousCarriage.element = context.getCarriage().element;
         previousEnd.row = context.getSelectionEnd().row;
         previousEnd.element = context.getSelectionEnd().element;
         previousStart.row = context.getSelectionStart().row;
@@ -89,16 +93,23 @@ public class RemoveSection extends AbstractSimpleDocumentCommand {
     @Override
     public void unExecute() {
         if (previousStart.row == previousEnd.row) {
-            context.getDocument().getElement(selectionStart.row).addAllElements(selectionStart.row, deleted.get(0));
+            context.getDocument().getElement(selectionStart.row).addAllElements(selectionStart.element, deleted.get(0));
         } else {
             Element newRow = context.getDocument().getElement(selectionStart.row).getSubElement(amountOfElements, context.getDocument().getElement(selectionStart.row).length() - 1);
             context.getDocument().getElement(selectionStart.row).removeElements(amountOfElements);
+            context.getDocument().getElement(selectionStart.row).addAllElements(deleted.get(0));
             context.getDocument().addElement(selectionStart.row + 1 , newRow);
-            for (int i = 0; i < deleted.size() - 1; i++) {
+            for (int i = 1; i < deleted.size() - 1; i++) {
                 context.getDocument().addElement(selectionStart.row + i, deleted.get(i));
             }
-            context.getDocument().getElement(previousEnd.row).addAllElements(0, deleted.get(deleted.size() - 1));
+            context.getDocument().getElement(selectionStart.row + deleted.size() - 1).addAllElements(0, deleted.get(deleted.size() - 1));
         }
+        context.getCarriage().row = previousCarriage.row;
+        context.getCarriage().element = previousCarriage.element;
+        context.getSelectionStart().row = previousStart.row;
+        context.getSelectionStart().element = previousStart.element;
+        context.getSelectionEnd().row = previousEnd.row;
+        context.getSelectionEnd().element = previousEnd.element;
     }
 
     @Override
