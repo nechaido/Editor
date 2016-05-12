@@ -46,13 +46,13 @@ public class SimpleDocumentDrawer extends Drawer {
 
     @Override
     public void drawCursor(Carriage carriage) {
-        int row = carriage.rowIndex;
-        int element = carriage.elementIndex;
+        int row = carriage.row;
+        int element = carriage.element;
         ArrayList<? extends VisualElement> lines = new ArrayList<>(visualDocument.getLines());
         int y = padding;
         int x = padding;
         int width = style.getCharWidth(' ');
-        int hight = style.getFont().getSize();
+        int height = style.getFont().getSize();
         for (int i = 0; i < row; i++) {
             y += lines.get(i).getSize().height;
         }
@@ -62,10 +62,62 @@ public class SimpleDocumentDrawer extends Drawer {
             x += partialWidth[element];
             if (element != elementCount) {
                 width = partialWidth[element + 1] - partialWidth[element];
-                hight = ((Line) lines.get(row)).getSize().height;
+                height = ((Line) lines.get(row)).getSize().height;
             }
         }
-        graphics2D.fillRect(x, y, width, hight);
+        Color oldColor = graphics2D.getColor();
+        Color newColor = new Color(oldColor.getRed(), oldColor.getGreen(), oldColor.getGreen(), 128);
+        graphics2D.setColor(newColor);
+        graphics2D.fillRect(x, y, width, height + 3);
+        graphics2D.setColor(oldColor);
+    }
+
+    @Override
+    public void drawSelection(Carriage selectionStartExternal, Carriage selectionEndExternal) {
+        ArrayList<VisualElement> lines = new ArrayList<>(visualDocument.getLines());
+        int y = padding;
+        int x = padding;
+        Carriage selectionStart = new Carriage();
+        Carriage selectionEnd = new Carriage();
+        if (selectionEndExternal.row > selectionStartExternal.row){
+            selectionEnd = selectionEndExternal;
+            selectionStart = selectionStartExternal;
+        } else if (selectionEndExternal.row < selectionStartExternal.row){
+            selectionEnd = selectionStartExternal;
+            selectionStart = selectionEndExternal;
+        } else if (selectionEndExternal.element > selectionStartExternal.element){
+            selectionEnd = selectionEndExternal;
+            selectionStart = selectionStartExternal;
+        } else  {
+            selectionEnd = selectionStartExternal;
+            selectionStart = selectionEndExternal;
+        }
+        for (int i = 0; i < selectionStart.row; i++) {
+            y += lines.get(i).getSize().height;
+        }
+        for (int i = selectionStart.row; i <= selectionEnd.row; i++) {
+            x = padding;
+            int start = ((i == selectionStart.row) ? selectionStart.element : 0);
+            int[] partialWidth = ((Line) lines.get(i)).getPartialWidthes();
+            int end = ((i == selectionEnd.row) ? selectionEnd.element : partialWidth.length);
+            int width = 0;
+            if (end == partialWidth.length){
+                width += style.getCharWidth(' ');
+                if (end != 0){
+                    end--;
+                }
+            }
+            width += partialWidth[end] - partialWidth[start];
+            x += partialWidth[start];
+            int height = lines.get(i).getSize().height;
+
+            Color oldColor = graphics2D.getColor();
+            Color newColor = new Color(0, 0, 255, 128);
+            graphics2D.setColor(newColor);
+            graphics2D.fillRect(x, y, width, height);
+            graphics2D.setColor(oldColor);
+            y += height;
+        }
     }
 
     @Override

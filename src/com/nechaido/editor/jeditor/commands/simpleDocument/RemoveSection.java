@@ -1,5 +1,6 @@
 package com.nechaido.editor.jeditor.commands.simpleDocument;
 
+import com.nechaido.editor.jeditor.Carriage;
 import com.nechaido.editor.jeditor.Context;
 import com.nechaido.editor.jeditor.commands.Command;
 import com.nechaido.editor.jeditor.document.Element;
@@ -11,56 +12,97 @@ import java.util.ArrayList;
  * Created by nechaido on 5/9/16.
  */
 public class RemoveSection extends AbstractSimpleDocumentCommand {
-    private int sectionStartRow;
-    private int sectionStartElement;
-    private int sectionEndRow;
-    private int sectionEndElement;
-    private ArrayList<Element> deleted;
-    private boolean deletedLastRow;
 
-    public RemoveSection(Context context, int sectionStartRow, int sectionStartElement, int sectionEndRow, int sectionEndElement) {
+    private Carriage previousEnd;
+    private Carriage previousStart;
+
+    private Carriage selectionStart;
+    private Carriage selectionEnd;
+
+    private ArrayList<Element> deleted;
+    private int amountOfElements;
+
+    public RemoveSection(Context context) {
         super(context, true);
-        this.sectionStartRow = sectionStartRow;
-        this.sectionStartElement = sectionStartElement;
-        this.sectionEndRow = sectionEndRow;
-        this.sectionEndElement = sectionEndElement;
-        deleted = new ArrayList<>(sectionEndRow - sectionStartRow + 1);
-        deletedLastRow = context.getDocument().getElement(sectionEndRow).length() <= sectionEndRow;
-        for (int i = sectionStartRow; i <= sectionEndRow; ++i) {
-            Element currentElement = context.getDocument().getElement(sectionStartRow);
-            int beginning = (i == sectionStartRow) ? sectionStartElement : 0;
-            int ending = (i == sectionEndRow) ? sectionEndElement : currentElement.length();
-            deleted.get(i).addAllElements(currentElement.getElements(beginning, ending));
+        previousEnd = new Carriage();
+        previousStart = new Carriage();
+        previousEnd.row = context.getSelectionEnd().row;
+        previousEnd.element = context.getSelectionEnd().element;
+        previousStart.row = context.getSelectionStart().row;
+        previousStart.element = context.getSelectionStart().element;
+        selectionStart = new Carriage();
+        selectionEnd = new Carriage();
+        if (context.getSelectionEnd().row > context.getSelectionStart().row){
+            selectionEnd = context.getSelectionEnd();
+            selectionStart = context.getSelectionStart();
+        } else if (context.getSelectionEnd().row < context.getSelectionStart().row){
+            selectionEnd = context.getSelectionStart();
+            selectionStart = context.getSelectionEnd();
+        } else if (context.getSelectionEnd().element > context.getSelectionStart().element){
+            selectionEnd = context.getSelectionEnd();
+            selectionStart = context.getSelectionStart();
+        } else  {
+            selectionEnd = context.getSelectionStart();
+            selectionStart = context.getSelectionEnd();
         }
+        deleted = new ArrayList<>(selectionEnd.row - selectionStart.row);
+        for (int i = selectionStart.row; i <= selectionEnd.row; i++) {
+            Element currentRow = context.getDocument().getElement(i);
+            int start = ((i == selectionStart.row) ? selectionStart.element : 0);
+            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length());
+            end--;
+            if (end < 0){
+                deleted.add(new ElementComposition());
+            } else {
+                deleted.add(currentRow.getSubElement(start, end));
+            }
+        }
+        amountOfElements = 0;
     }
 
     @Override
     public void execute() {
-        for (int i = sectionEndRow; i >= sectionStartRow; --i) {
-            Element currentElement = context.getDocument().getElement(i);
-            int beginning = (i == sectionStartRow) ? sectionStartElement : 0;
-            int ending = (i == sectionEndRow) ? sectionEndElement : currentElement.length();
-            currentElement.removeElements(beginning, ending);
-            if (currentElement.length() == 0 && i != sectionStartRow) {
-                context.getDocument().removeElement(i);
+        if (selectionStart.row == selectionEnd.row){
+            context.getDocument().getElement(selectionStart.row).removeElements(
+                    selectionStart.element, selectionEnd.element);
+        } else {
+            context.getDocument().getElement(selectionStart.row).removeElements(selectionStart.element);
+            for (int i = selectionStart.row + 1; i < selectionEnd.row; i++) {
+                context.getDocument().removeElement(selectionStart.row + 1);
             }
+            amountOfElements = context.getDocument().getElement(selectionStart.row).length();
+            for (int i = 0; i < selectionEnd.element; i++) {
+                context.getDocument().getElement(selectionStart.row + 1).removeElement(0);
+            }
+            context.getDocument().getElement(selectionStart.row).addAllElements(
+                    context.getDocument().getElement(selectionStart.row + 1));
+            context.getDocument().removeElement(selectionStart.row + 1);
         }
+        context.getCarriage().row = selectionStart.row;
+        context.getCarriage().element = selectionStart.element;
+        context.getSelectionEnd().row = selectionStart.row;
+        context.getSelectionEnd().element = selectionStart.element;
+        context.getSelectionStart().row = selectionStart.row;
+        context.getSelectionStart().element = selectionStart.element;
     }
 
     @Override
     public void unExecute() {
-        for (int i = 0; i < deleted.size(); ++i) {
-            Element currentElement = context.getDocument().getElement(i + sectionStartRow);
-            currentElement.addAllElements(deleted.get(i));
-            int preLastRowIndex = sectionStartRow - sectionEndRow;
-            if (i < preLastRowIndex || ((i == preLastRowIndex) && deletedLastRow)) {
-                context.getDocument().addElement(i + 1, new ElementComposition());
+        if (previousStart.row == previousEnd.row) {
+            context.getDocument().getElement(selectionStart.row).addAllElements(selectionStart.row, deleted.get(0));
+        } else {
+            Element newRow = context.getDocument().getElement(selectionStart.row).getSubElement(amountOfElements, context.getDocument().getElement(selectionStart.row).length() - 1);
+            context.getDocument().getElement(selectionStart.row).removeElements(amountOfElements);
+            context.getDocument().addElement(selectionStart.row + 1 , newRow);
+            for (int i = 0; i < deleted.size() - 1; i++) {
+                context.getDocument().addElement(selectionStart.row + i, deleted.get(i));
             }
+            context.getDocument().getElement(previousEnd.row).addAllElements(0, deleted.get(deleted.size() - 1));
         }
     }
 
     @Override
     public Type type() {
-        return null;
+        return Type.REMOVE;
     }
 }

@@ -16,6 +16,9 @@ public class CommandHistory {
     }
 
     public void undo() {
+        if (undoHistory.isEmpty()){
+            return;
+        }
         Command command;
         Command.Type type = undoHistory.peek().type();
         while (!undoHistory.isEmpty() && type == undoHistory.peek().type()) {
@@ -29,6 +32,9 @@ public class CommandHistory {
     }
 
     public void redo() {
+        if (redoHistory.isEmpty()){
+            return;
+        }
         Command command;
         Command.Type type = undoHistory.peek().type();
         while (!redoHistory.isEmpty() && type == redoHistory.peek().type()) {

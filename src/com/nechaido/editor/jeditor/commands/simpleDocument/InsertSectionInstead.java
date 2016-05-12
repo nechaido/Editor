@@ -17,7 +17,7 @@ public class InsertSectionInstead extends AbstractSimpleDocumentCommand {
                                 int sectionStartRow, int sectionStartElement, int sectionEndRow, int sectionEndElement,
                                 ArrayList<Element> section) {
         super(context, true);
-        removeSection = new RemoveSection(context, sectionStartRow, sectionStartElement, sectionEndRow, sectionEndElement);
+//        removeSection = new RemoveSection(context, sectionStartRow, sectionStartElement, sectionEndRow, sectionEndElement);
         insertSection = new InsertSection(context, sectionStartRow, sectionStartElement, section);
     }
 

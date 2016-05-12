@@ -44,4 +44,12 @@ public class Context {
     public Carriage getCarriage() {
         return carriage;
     }
+
+    public Carriage getSelectionStart() {
+        return selectionStart;
+    }
+
+    public Carriage getSelectionEnd() {
+        return selectionEnd;
+    }
 }

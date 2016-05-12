@@ -2,9 +2,12 @@ package com.nechaido.editor.jeditor;
 
 import com.nechaido.editor.jeditor.commands.Command;
 import com.nechaido.editor.jeditor.commands.CommandHistory;
-import com.nechaido.editor.jeditor.commands.simpleDocument.InsertElement;
-import com.nechaido.editor.jeditor.commands.simpleDocument.RemoveElement;
-import com.nechaido.editor.jeditor.commands.simpleDocument.SplitLine;
+import com.nechaido.editor.jeditor.commands.simpleDocument.RemoveSection;
+import com.nechaido.editor.jeditor.commands.simpleDocument.carriageMover.*;
+import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.InsertElement;
+import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.RemoveElement;
+import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.RemoveLineBreak;
+import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.SplitLine;
 import com.nechaido.editor.jeditor.document.Document;
 import com.nechaido.editor.jeditor.document.simpleDocument.Picture;
 import com.nechaido.editor.jeditor.document.simpleDocument.SimpleDocument;
@@ -29,6 +32,12 @@ public class JEditor extends JComponent implements KeyListener {
     private Carriage selectionStart;
     private Carriage selectionEnd;
 
+    private boolean selectionMode;
+
+    private CommandGenerator commandGenerator;
+
+
+
     public JEditor() {
         commandHistory = new CommandHistory();
         document = new SimpleDocument(new Style(new Font("Source Code Pro", Font.PLAIN, 15)));
@@ -36,6 +45,7 @@ public class JEditor extends JComponent implements KeyListener {
         selectionStart = new Carriage();
         selectionEnd = new Carriage();
         context = new Context((SimpleDocument) document, carriage, selectionStart, selectionEnd);
+        commandGenerator = new CommandGenerator();
     }
 
     @Override
@@ -47,68 +57,11 @@ public class JEditor extends JComponent implements KeyListener {
         Drawer drawer = document.getDrawer(graphics);
         drawer.draw(document);
         drawer.drawCursor(carriage);
+        if (selectionMode){
+            drawer.drawSelection(selectionStart, selectionEnd);
+        }
         setPreferredSize(drawer.getSize());
     }
-
-    private void remove() {
-        Command command = new RemoveElement(context);
-        commandHistory.run(command);
-    }
-
-    private void insertSymbol(char c) {
-        Command command = new InsertElement(context, context.getSymbolFactory().getSymbol(c));
-        commandHistory.run(command);
-    }
-
-    private void insertImage() {
-        Command command = new InsertElement(context, new Picture(context.getPictureFactory().getPicure("/home/nechaido/glacier.jpg"), new Dimension(100, 100)));
-        commandHistory.run(command);
-    }
-
-    private void splitLine() {
-        Command command = new SplitLine(context);
-        commandHistory.run(command);
-    }
-
-//    private void moveCursorLeft() {
-//        if (cursorElement > 0) {
-//            --cursorElement;
-//        } else if (cursorRow > 0) {
-//            --cursorRow;
-//            cursorElement = document.getElement(cursorRow).length();
-//            System.out.println(cursorElement);
-//        }
-//    }
-//
-//    private void moveCursorRight() {
-//        if (cursorElement < document.getElement(cursorRow).length()) {
-//            ++cursorElement;
-//        } else if (cursorRow < document.length() - 1) {
-//            cursorElement = 0;
-//            cursorRow++;
-//        }
-//
-//    }
-//
-//    private void moveCursorDown() {
-//        if (cursorRow < document.length() - 1) {
-//            ++cursorRow;
-//            int lastSymbol = document.getElement(cursorRow).length();
-//            if (cursorElement > lastSymbol) {
-//                cursorElement = lastSymbol;
-//            }
-//        }
-//    }
-//
-//    private void moveCursorUp() {
-//        if (cursorRow > 0) {
-//            --cursorRow;
-//        }
-//        int lastSymbol = document.getElement(cursorRow).length();
-//        if (cursorElement > lastSymbol) {
-//            cursorElement = lastSymbol;
-//        }
-//    }
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
@@ -116,36 +69,77 @@ public class JEditor extends JComponent implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        int key = keyEvent.getKeyCode();
-        System.out.println(key);
-        if (key == KeyEvent.VK_KP_RIGHT || key == KeyEvent.VK_RIGHT) {
-//            moveCursorRight();
-        } else if (key == KeyEvent.VK_KP_LEFT || key == KeyEvent.VK_LEFT) {
-//            moveCursorLeft();
-        } else if (key == KeyEvent.VK_KP_DOWN || key == KeyEvent.VK_DOWN) {
-//            moveCursorDown();
-        } else if (key == KeyEvent.VK_KP_UP || key == KeyEvent.VK_UP) {
-//            moveCursorUp();
-        } else if (key == KeyEvent.VK_BACK_SPACE) {
-            remove();
-        } else if (key == KeyEvent.VK_Z && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-            commandHistory.undo();
-        } else if (key == KeyEvent.VK_Y && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-            commandHistory.redo();
-        } else if (key == KeyEvent.VK_Z && keyEvent.isShiftDown() && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-            commandHistory.redo();
-        } else if (key == KeyEvent.VK_I && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-            insertImage();
-        } else if (key == KeyEvent.VK_ENTER) {
-            splitLine();
-        } else if (Character.isAlphabetic(key) || Character.isDigit(key) || Character.isSpaceChar(key)) {
-            insertSymbol(keyEvent.getKeyChar());
+        Command command = commandGenerator.getCommand(keyEvent);
+        if (command != null){
+            commandHistory.run(command);
+            revalidate();
+            repaint();
         }
-        revalidate();
-        repaint();
+        System.out.println(selectionStart.row + " " + selectionStart.element);
+        System.out.println(selectionEnd.row + " " + selectionEnd.element);
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
+    }
+
+    private class CommandGenerator {
+        private Command getCommand(KeyEvent keyEvent){
+            int key = keyEvent.getKeyCode();
+            Command result = null;
+            if (key == KeyEvent.VK_KP_RIGHT || key == KeyEvent.VK_RIGHT) {
+                if (keyEvent.isShiftDown()){
+                    result = new MoveSelectionRight(context);
+                } else {
+                    result = new MoveCarriageRight(context);
+                }
+            } else if (key == KeyEvent.VK_KP_LEFT || key == KeyEvent.VK_LEFT) {
+                if (keyEvent.isShiftDown()){
+                    result = new MoveSelectionLeft(context);
+                } else {
+                    result = new MoveCarriageLeft(context);
+                }
+            } else if (key == KeyEvent.VK_KP_DOWN || key == KeyEvent.VK_DOWN) {
+                if (keyEvent.isShiftDown()){
+                    result = new MoveSelectionDown(context);
+                } else {
+                    result = new MoveCarriageDown(context);
+                }
+            } else if (key == KeyEvent.VK_KP_UP || key == KeyEvent.VK_UP) {
+                if (keyEvent.isShiftDown()){
+                    result = new MoveSelectionUp(context);
+                } else {
+                    result = new MoveCarriageUp(context);
+                }
+            } else if (key == KeyEvent.VK_BACK_SPACE) {
+                if (selectionMode){
+                    result = new RemoveSection(context);
+                } else if (carriage.element == 0){
+                    result = new RemoveLineBreak(context);
+                } else {
+                    result = new RemoveElement(context);
+                }
+            } else if (key == KeyEvent.VK_Z && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+                commandHistory.undo();
+            } else if (key == KeyEvent.VK_Y && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+                commandHistory.redo();
+            } else if (key == KeyEvent.VK_Z && keyEvent.isShiftDown() && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+                commandHistory.redo();
+            } else if (key == KeyEvent.VK_I && (keyEvent.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+                result = new InsertElement(context, new Picture(context.getPictureFactory().getPicure("/home/nechaido/glacier.jpg"), new Dimension(100, 100)));
+            } else if (key == KeyEvent.VK_ENTER) {
+                result = new SplitLine(context);
+            } else if (Character.isAlphabetic(key) || Character.isDigit(key) || Character.isSpaceChar(key)) {
+                result = new InsertElement(context, context.getSymbolFactory().getSymbol(keyEvent.getKeyChar()));
+            }
+            if (!selectionMode){
+                selectionStart.row = carriage.row;
+                selectionStart.element = carriage.element;
+                selectionEnd.row = carriage.row;
+                selectionEnd.element = carriage.element;
+            }
+            selectionMode = keyEvent.isShiftDown();
+            return result;
+        }
     }
 }

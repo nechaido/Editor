@@ -17,7 +17,7 @@ public class ElementComposition implements Element {
     }
 
     public ElementComposition(Collection<Element> elements) {
-        contents.addAll(elements);
+        contents = new LinkedList<>(elements);
     }
 
     @Override
