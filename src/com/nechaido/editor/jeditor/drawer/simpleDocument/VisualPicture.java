@@ -27,11 +27,6 @@ public class VisualPicture implements VisualElement {
     }
 
     @Override
-    public Style getStyle() {
-        return null;
-    }
-
-    @Override
     public void drawBy(Drawer drawer) {
         ((SimpleDocumentDrawer) drawer).draw(this);
     }

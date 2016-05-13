@@ -10,7 +10,5 @@ import java.awt.*;
 public interface VisualElement {
     Dimension getSize();
 
-    Style getStyle();
-
     void drawBy(Drawer drawer);
 }

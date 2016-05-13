@@ -62,12 +62,13 @@ public abstract class PrimitiveElement implements Element {
     }
 
     @Override
-    public void setElement(int index, Element element) {
-
-    }
+    public void setElement(int index, Element element) { }
 
     @Override
     public int length() {
         return 0;
     }
+
+    @Override
+    public void empty() {    }
 }

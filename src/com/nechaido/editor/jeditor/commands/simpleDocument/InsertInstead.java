@@ -1,33 +1,34 @@
 package com.nechaido.editor.jeditor.commands.simpleDocument;
 
 import com.nechaido.editor.jeditor.Context;
-import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.InsertSection;
+import com.nechaido.editor.jeditor.commands.Command;
+import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.InsertElement;
 import com.nechaido.editor.jeditor.document.Element;
 
-import java.util.ArrayList;
-
 /**
- * Created by nechaido on 5/9/16.
+ * Created by Nechai Dmytro nechaido@gmail.com  on 5/13/16.
  */
-public class InsertSectionInstead extends AbstractSimpleDocumentCommand {
-    private RemoveSection removeSection;
-    private InsertSection insertSection;
+public class InsertInstead extends AbstractSimpleDocumentCommand {
 
-    public InsertSectionInstead(Context context, Element[] inserts) {
+    private InsertElement insertElement;
+    private RemoveSection removeSection;
+
+
+    public InsertInstead(Context context, Element element) {
         super(context, true);
         removeSection = new RemoveSection(context);
-        insertSection = new InsertSection(context, inserts);
+        insertElement = new InsertElement(context, element);
     }
 
     @Override
     public void execute() {
         removeSection.execute();
-        insertSection.execute();
+        insertElement.execute();
     }
 
     @Override
     public void unExecute() {
-        insertSection.unExecute();
+        insertElement.unExecute();
         removeSection.unExecute();
     }
 

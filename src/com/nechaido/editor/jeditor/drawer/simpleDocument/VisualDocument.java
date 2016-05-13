@@ -16,14 +16,12 @@ public class VisualDocument implements VisualElement {
 
     private Dimension size;
     private LinkedList<Line> lines;
-    private Style style;
 
     public VisualDocument(SimpleDocument simpleDocument) {
         lines = new LinkedList<>();
-        style = simpleDocument.getStyle();
         size = new Dimension(0, 0);
         for (int i = 0; i < simpleDocument.length(); i++) {
-            Line newLine = new Line(simpleDocument.getElement(i), style);
+            Line newLine = new Line(simpleDocument.getElement(i));
             lines.add(newLine);
             if (size.width < newLine.getSize().width) {
                 size.width = newLine.getSize().width;
@@ -41,10 +39,6 @@ public class VisualDocument implements VisualElement {
         return size;
     }
 
-    @Override
-    public Style getStyle() {
-        return style;
-    }
 
     @Override
     public void drawBy(Drawer drawer) {

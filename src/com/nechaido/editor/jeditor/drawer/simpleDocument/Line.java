@@ -1,6 +1,7 @@
 package com.nechaido.editor.jeditor.drawer.simpleDocument;
 
 import com.nechaido.editor.jeditor.document.Element;
+import com.nechaido.editor.jeditor.document.simpleDocument.ElementComposition;
 import com.nechaido.editor.jeditor.document.simpleDocument.Picture;
 import com.nechaido.editor.jeditor.document.simpleDocument.Style;
 import com.nechaido.editor.jeditor.document.simpleDocument.Symbol;
@@ -18,18 +19,17 @@ public class Line implements VisualElement {
 
     private Dimension size;
     private LinkedList<VisualElement> list;
-    private Style style;
-    private int[] partialWidthes;
+//    private Style style;
+    private int[] partialWidth;
 
-    public Line(Element element, Style style) {
+    public Line(Element element) {
         size = new Dimension();
         list = new LinkedList<>();
-        this.style = style;
-        size.height = style.getFont().getSize();
+        size.height = ((ElementComposition)element).getStyle().getFont().getSize();
         int i = 0;
-        partialWidthes = new int[element.length() + 1];
+        partialWidth = new int[element.length() + 1];
         int currentIndex = 0;
-        partialWidthes[currentIndex++] = 0;
+        partialWidth[currentIndex++] = 0;
         while (i < element.length()) {
             Element currentElement = element.getElement(i);
             if (currentElement instanceof Picture) {
@@ -40,18 +40,22 @@ public class Line implements VisualElement {
                 }
                 int picWidth = picture.getSize().width;
                 size.width += picWidth;
-                partialWidthes[currentIndex++] = partialWidthes[currentIndex - 2] + picWidth;
+                partialWidth[currentIndex++] = partialWidth[currentIndex - 2] + picWidth;
                 ++i;
             } else if (currentElement instanceof Symbol) {
-                Word currentWord = new Word(style);
-                currentWord.getSize().height = style.getFont().getSize();
-                while (currentElement instanceof Symbol) {
+                Style curStyle = ((ElementComposition) element).getStyle(i);
+                Word currentWord = new Word(curStyle);
+                currentWord.getSize().height = curStyle.getFont().getSize();
+                if (curStyle.getFont().getSize() > size.height){
+                    size.height = curStyle.getFont().getSize();
+                }
+                while (currentElement instanceof Symbol && curStyle == ((ElementComposition) element).getStyle(i)) {
                     char ch = ((Symbol) currentElement).getCharacter();
                     currentWord.append(ch);
-                    int chaWidth = style.getCharWidth(ch);
+                    int chaWidth = curStyle.getCharWidth(ch);
                     size.width += chaWidth;
                     currentWord.getSize().width += chaWidth;
-                    partialWidthes[currentIndex++] = partialWidthes[currentIndex - 2] + chaWidth;
+                    partialWidth[currentIndex++] = partialWidth[currentIndex - 2] + chaWidth;
                     if (i == element.length() - 1) {
                         ++i;
                         break;
@@ -70,10 +74,6 @@ public class Line implements VisualElement {
         return size;
     }
 
-    @Override
-    public Style getStyle() {
-        return style;
-    }
 
     @Override
     public void drawBy(Drawer drawer) {
@@ -84,8 +84,8 @@ public class Line implements VisualElement {
         return list;
     }
 
-    public int[] getPartialWidthes() {
-        return partialWidthes;
+    public int[] getPartialWidth() {
+        return partialWidth;
     }
 
     public int amountOfElements() {

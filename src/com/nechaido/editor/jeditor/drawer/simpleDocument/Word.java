@@ -29,7 +29,6 @@ public class Word implements VisualElement {
         return size;
     }
 
-    @Override
     public Style getStyle() {
         return style;
     }

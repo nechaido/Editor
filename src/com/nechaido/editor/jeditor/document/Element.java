@@ -35,4 +35,6 @@ public interface Element {
     void setElement(int index, Element element);
 
     int length();
+
+    void empty();
 }

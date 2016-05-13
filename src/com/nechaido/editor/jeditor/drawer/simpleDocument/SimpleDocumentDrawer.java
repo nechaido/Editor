@@ -20,11 +20,11 @@ public class SimpleDocumentDrawer extends Drawer {
     private Dimension currentOffset;
     private int padding;
 
-    public SimpleDocumentDrawer(Graphics graphics, SimpleDocument document, Style style) {
+    public SimpleDocumentDrawer(Graphics graphics, SimpleDocument document) {
         super(graphics);
         this.document = document;
-        this.style = style;
-        padding = style.getFont().getSize();
+        style = document.getStyle();
+        padding = 10;
         currentOffset = new Dimension(0, 0);
     }
 
@@ -53,22 +53,22 @@ public class SimpleDocumentDrawer extends Drawer {
         int x = padding;
         int width = style.getCharWidth(' ');
         int height = style.getFont().getSize();
-        for (int i = 0; i < row; i++) {
+        for (int i = 0; i <= row; i++) {
             y += lines.get(i).getSize().height;
         }
         if (((Line) lines.get(row)).amountOfElements() > 0) {
-            int[] partialWidth = ((Line) lines.get(row)).getPartialWidthes();
+            int[] partialWidth = ((Line) lines.get(row)).getPartialWidth();
             int elementCount = partialWidth.length - 1;
             x += partialWidth[element];
             if (element != elementCount) {
                 width = partialWidth[element + 1] - partialWidth[element];
-                height = ((Line) lines.get(row)).getSize().height;
             }
+            height = ((Line) lines.get(row)).getSize().height;
         }
         Color oldColor = graphics2D.getColor();
         Color newColor = new Color(oldColor.getRed(), oldColor.getGreen(), oldColor.getGreen(), 128);
         graphics2D.setColor(newColor);
-        graphics2D.fillRect(x, y, width, height + 3);
+        graphics2D.fillRect(x, y - height, width, height + 3);
         graphics2D.setColor(oldColor);
     }
 
@@ -98,7 +98,7 @@ public class SimpleDocumentDrawer extends Drawer {
         for (int i = selectionStart.row; i <= selectionEnd.row; i++) {
             x = padding;
             int start = ((i == selectionStart.row) ? selectionStart.element : 0);
-            int[] partialWidth = ((Line) lines.get(i)).getPartialWidthes();
+            int[] partialWidth = ((Line) lines.get(i)).getPartialWidth();
             int end = ((i == selectionEnd.row) ? selectionEnd.element : partialWidth.length);
             int width = 0;
             if (end == partialWidth.length){
@@ -126,7 +126,6 @@ public class SimpleDocumentDrawer extends Drawer {
     }
 
     public void draw(VisualDocument visualDocument) {
-        graphics2D.setFont(style.getFont());
         currentOffset.height = padding;
         currentOffset.width = padding;
         for (VisualElement element : visualDocument.getLines()) {

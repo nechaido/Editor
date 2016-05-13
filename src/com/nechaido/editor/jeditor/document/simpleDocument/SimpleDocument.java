@@ -10,20 +10,13 @@ import java.awt.*;
  * Created by nechaido on 5/7/16.
  */
 public class SimpleDocument extends ElementComposition implements Document {
-    private Style style;
 
     public SimpleDocument(Style style) {
-        super();
-        this.style = style;
-        addElement(new ElementComposition());
+        super(style);
     }
 
     @Override
     public Drawer getDrawer(Graphics graphics) {
-        return new SimpleDocumentDrawer(graphics, this, style);
-    }
-
-    public Style getStyle() {
-        return style;
+        return new SimpleDocumentDrawer(graphics, this);
     }
 }

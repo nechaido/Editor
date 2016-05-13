@@ -48,6 +48,9 @@ public class CommandHistory {
     }
 
     public void run(Command command) {
+        if (command == null){
+            return;
+        }
         if (!redoHistory.isEmpty()) {
             redoHistory = new Stack<>();
         }

@@ -56,7 +56,7 @@ public class RemoveSection extends AbstractSimpleDocumentCommand {
             int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length());
             end--;
             if (end < 0){
-                deleted.add(new ElementComposition());
+                deleted.add(new ElementComposition(context.getCurrentStyle()));
             } else {
                 deleted.add(currentRow.getSubElement(start, end));
             }
