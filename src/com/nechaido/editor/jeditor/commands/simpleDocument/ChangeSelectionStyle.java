@@ -20,7 +20,6 @@ public class ChangeSelectionStyle extends AbstractSimpleDocumentCommand {
     public ChangeSelectionStyle(Context context, Style style) {
         super(context, true);
         newStyle = style;
-        int size = context.getSelectionEnd().row - context.getSelectionStart().row + 1;
         selectionStart = new Carriage();
         selectionEnd = new Carriage();
         if (context.getSelectionEnd().row > context.getSelectionStart().row){
@@ -36,15 +35,16 @@ public class ChangeSelectionStyle extends AbstractSimpleDocumentCommand {
             selectionEnd = context.getSelectionStart();
             selectionStart = context.getSelectionEnd();
         }
+        int size = selectionEnd.row - selectionStart.row + 1;
         oldStyles = new Style[size][];
-        for (int i = context.getSelectionStart().row; i <= context.getSelectionEnd().row ; i++) {
+        for (int i = selectionStart.row; i <= selectionEnd.row ; i++) {
             ElementComposition currentRow = (ElementComposition) context.getDocument().getElement(i);
             int start = ((i == selectionStart.row) ? selectionStart.element : 0);
-            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length() - 1);
-            int length = end - start + 1;
-            oldStyles[i] = new Style[length];
+            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length());
+            int length = end - start;
+            oldStyles[i - selectionStart.row] = new Style[length];
             for (int j = 0; j < length; j++) {
-                   oldStyles[i][j] = currentRow.getStyle(start+j);
+                   oldStyles[i  - selectionStart.row][j] = currentRow.getStyle(start+j);
             }
         }
     }
@@ -54,8 +54,8 @@ public class ChangeSelectionStyle extends AbstractSimpleDocumentCommand {
         for (int i = context.getSelectionStart().row; i <= context.getSelectionEnd().row ; i++) {
             ElementComposition currentRow = (ElementComposition) context.getDocument().getElement(i);
             int start = ((i == selectionStart.row) ? selectionStart.element : 0);
-            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length() - 1);
-            int length = end - start + 1;
+            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length());
+            int length = end - start;
             for (int j = 0; j < length; j++) {
                 currentRow.setStyle(start+j, newStyle);
             }
@@ -64,13 +64,13 @@ public class ChangeSelectionStyle extends AbstractSimpleDocumentCommand {
 
     @Override
     public void unExecute() {
-        for (int i = context.getSelectionStart().row; i <= context.getSelectionEnd().row ; i++) {
+        for (int i = selectionStart.row; i <= selectionEnd.row ; i++) {
             ElementComposition currentRow = (ElementComposition) context.getDocument().getElement(i);
             int start = ((i == selectionStart.row) ? selectionStart.element : 0);
-            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length() - 1);
-            int length = end - start + 1;
+            int end = ((i == selectionEnd.row) ? selectionEnd.element : currentRow.length());
+            int length = end - start;
             for (int j = 0; j < length; j++) {
-                currentRow.setStyle(start+j, oldStyles[i][j]);
+                currentRow.setStyle(start+j, oldStyles[i - selectionStart.row][j]);
             }
         }
     }

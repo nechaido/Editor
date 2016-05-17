@@ -154,6 +154,9 @@ public class ElementComposition implements Element {
         if (styles.size() == 0){
             return style;
         }
+        if (i >= styles.size()){
+            styles.get(styles.size()-1);
+        }
         return styles.get(i);
     }
 

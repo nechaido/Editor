@@ -3,12 +3,8 @@ package com.nechaido.editor.jeditor;
 import com.nechaido.editor.jeditor.commands.Command;
 import com.nechaido.editor.jeditor.commands.CommandHistory;
 import com.nechaido.editor.jeditor.commands.simpleDocument.*;
-import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.InsertSection;
+import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.*;
 import com.nechaido.editor.jeditor.commands.simpleDocument.carriageMover.*;
-import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.InsertElement;
-import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.RemoveElement;
-import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.RemoveLineBreak;
-import com.nechaido.editor.jeditor.commands.simpleDocument.noSelectionManipulators.SplitLine;
 import com.nechaido.editor.jeditor.document.Document;
 import com.nechaido.editor.jeditor.document.simpleDocument.*;
 import com.nechaido.editor.jeditor.drawer.Drawer;
@@ -153,8 +149,8 @@ public class JEditor extends JComponent implements KeyListener {
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             currentFile = fileChooser.getSelectedFile();
+            document = new SimpleDocument(currentStyle);
             document.addElement(new ElementComposition(currentStyle));
-            document = new SimpleDocument(context.getCurrentStyle());
             commandHistory.empty();
             carriage = new Carriage();
             selectionStart = new Carriage();
@@ -299,7 +295,7 @@ public class JEditor extends JComponent implements KeyListener {
         if (!selectionMode && document.getElement(carriage.row).getElement(carriage.element) instanceof Picture){
             Dimension size = new Dimension();
             if (askSize(size)){
-                ((Picture) document.getElement(carriage.row).getElement(carriage.element)).setSize(size);
+                commandHistory.run(new ResizeImage(context, size));
                 revalidate();
                 repaint();
             }
