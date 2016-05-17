@@ -1,6 +1,6 @@
-DON'T BE A DICK PUBLIC LICENSE (DBDPL)
-Copyright (c) 2016 Dmytro Nechai nechaido@gmail.com
-TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+##DON'T BE A DICK PUBLIC LICENSE (DBDPL)
+#####Copyright (c) 2016 Dmytro Nechai nechaido@gmail.com
+####TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
  1. Do whatever you like with the original work, just don't be a dick.
 
