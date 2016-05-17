@@ -4,10 +4,9 @@ Text Editor with support of images
 This repository is created for sharing purposes only and major part of commits was made by request.
 I am sotty for awful history of commits.
 
-###Please read license first
-Copyright (c) 2016 Dmytro Nechai nechaido@gmail.com
-####DON'T BE A DICK PUBLIC LICENSE (DBDPL)
-#### TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+###DON'T BE A DICK PUBLIC LICENSE (DBDPL)
+#####Copyright (c) 2016 Dmytro Nechai nechaido@gmail.com
+####TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
  1. Do whatever you like with the original work, just don't be a dick.
 
